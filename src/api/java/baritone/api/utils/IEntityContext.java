@@ -25,6 +25,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -54,7 +55,7 @@ public interface IEntityContext {
         return IBaritone.KEY.get(entity());
     }
 
-    @Nullable PlayerInventory inventory();
+    @Nullable Inventory inventory();
 
     IPlayerController playerController();
 

@@ -19,6 +19,7 @@ package baritone.utils.player;
 
 import baritone.api.BaritoneAPI;
 import baritone.api.cache.IWorldData;
+import baritone.api.minefortress.IMinefortressEntity;
 import baritone.api.pathing.calc.Avoidance;
 import baritone.api.utils.BetterBlockPos;
 import baritone.api.utils.IEntityContext;
@@ -34,6 +35,7 @@ import net.minecraft.entity.mob.SpiderEntity;
 import net.minecraft.entity.mob.ZombifiedPiglinEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.world.World;
@@ -61,8 +63,8 @@ public class EntityContext implements IEntityContext {
     }
 
     @Override
-    public @Nullable PlayerInventory inventory() {
-        return entity instanceof PlayerEntity ? ((PlayerEntity) entity).getInventory() : null;
+    public @Nullable Inventory inventory() {
+        return IMinefortressEntity.of(entity).getInventory();
     }
 
     @Override

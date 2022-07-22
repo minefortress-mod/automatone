@@ -53,6 +53,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidBlock;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
@@ -383,7 +384,7 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
             return new PathingCommand(null, PathingCommandType.SET_GOAL_AND_PATH);
         }
 
-        PlayerInventory inventory = ctx.inventory();
+        Inventory inventory = ctx.inventory();
         if (inventory == null) {
             this.schematic = null;  // cancel the task
             return null;
@@ -502,7 +503,7 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
         if (toPlace.isPresent() && isSafeToCancel && ctx.entity().isOnGround() && ticks <= 0) {
             Rotation rot = toPlace.get().rot;
             baritone.getLookBehavior().updateTarget(rot, true);
-            inventory.selectedSlot = toPlace.get().hotbarSelection;
+//            inventory.selectedSlot = toPlace.get().hotbarSelection;
             baritone.getInputOverrideHandler().setInputForceState(Input.SNEAK, true);
             if ((ctx.isLookingAt(toPlace.get().placeAgainst) && ((BlockHitResult) ctx.objectMouseOver()).getSide().equals(toPlace.get().side)) || ctx.entityRotations().isReallyCloseTo(rot)) {
                 baritone.getInputOverrideHandler().setInputForceState(Input.CLICK_RIGHT, true);

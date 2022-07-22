@@ -43,6 +43,7 @@ import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.fluid.WaterFluid;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.FluidTags;
@@ -467,10 +468,10 @@ public interface MovementHelper extends ActionCosts {
      * @param ts  previously calculated ToolSet
      */
     static void switchToBestToolFor(IEntityContext ctx, BlockState b, ToolSet ts, boolean preferSilkTouch) {
-        PlayerInventory inventory = ctx.inventory();
+        Inventory inventory = ctx.inventory();
 
         if (inventory != null && !ctx.baritone().settings().disableAutoTool.get() && !ctx.baritone().settings().assumeExternalAutoTool.get()) {
-            inventory.selectedSlot = ts.getBestSlot(b.getBlock(), preferSilkTouch);
+//            inventory.selectedSlot = ts.getBestSlot(b.getBlock(), preferSilkTouch);
         }
     }
 

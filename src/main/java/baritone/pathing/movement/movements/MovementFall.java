@@ -38,6 +38,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.LadderBlock;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.fluid.WaterFluid;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
@@ -107,13 +108,13 @@ public class MovementFall extends Movement {
         BlockState destState = ctx.world().getBlockState(dest);
         boolean isWater = destState.getFluidState().getFluid() instanceof WaterFluid;
         if (!isWater && willPlaceBucket() && !playerFeet.equals(dest)) {
-            PlayerInventory inventory = ctx.inventory();
+            Inventory inventory = ctx.inventory();
             if (inventory == null || !PlayerInventory.isValidHotbarIndex(InventoryBehavior.getSlotWithStack(inventory, Automatone.WATER_BUCKETS)) || ctx.world().getDimension().isUltrawarm()) {
                 return state.setStatus(MovementStatus.UNREACHABLE);
             }
 
             if (ctx.entity().getY() - dest.getY() < ctx.playerController().getBlockReachDistance() && !ctx.entity().isOnGround()) {
-                inventory.selectedSlot = InventoryBehavior.getSlotWithStack(inventory, Automatone.WATER_BUCKETS);
+//                inventory.selectedSlot = InventoryBehavior.getSlotWithStack(inventory, Automatone.WATER_BUCKETS);
 
                 targetRotation = new Rotation(toDest.getYaw(), 90.0F);
 
@@ -132,10 +133,10 @@ public class MovementFall extends Movement {
                 // Avoid sinking further than expected
                 state.setInput(Input.JUMP, true);
 
-                PlayerInventory inventory = ctx.inventory();
+                Inventory inventory = ctx.inventory();
 
                 if (inventory != null && PlayerInventory.isValidHotbarIndex(InventoryBehavior.getSlotWithStack(inventory, Automatone.EMPTY_BUCKETS))) {
-                    inventory.selectedSlot = InventoryBehavior.getSlotWithStack(inventory, Automatone.EMPTY_BUCKETS);
+//                    inventory.selectedSlot = InventoryBehavior.getSlotWithStack(inventory, Automatone.EMPTY_BUCKETS);
                     if (ctx.entity().getVelocity().y >= 0) {
                         return state.setInput(Input.CLICK_RIGHT, true);
                     } else {

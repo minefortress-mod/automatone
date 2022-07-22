@@ -20,6 +20,7 @@ package baritone.pathing.movement;
 import baritone.Automatone;
 import baritone.Baritone;
 import baritone.api.IBaritone;
+import baritone.api.minefortress.IMinefortressEntity;
 import baritone.api.pathing.movement.ActionCosts;
 import baritone.behavior.InventoryBehavior;
 import baritone.cache.WorldData;
@@ -42,6 +43,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Objects;
 
 import static baritone.api.pathing.movement.ActionCosts.COST_INF;
 
@@ -85,7 +88,8 @@ public class CalculationContext {
     /**The extra space required on each side of the entity for free movement; 0 in the case of a normal size player*/
     public final int requiredSideSpace;
     public final int height;
-    private final PlayerEntity player;
+    private final LivingEntity livingEntity;
+    private final IMinefortressEntity mfEntity;
     private final BlockPos.Mutable blockPos;
     public final int breathTime;
     public final int startingBreathTime;
@@ -100,15 +104,15 @@ public class CalculationContext {
     public CalculationContext(IBaritone baritone, boolean forUseOnAnotherThread) {
         this.safeForThreadedUse = forUseOnAnotherThread;
         this.baritone = baritone;
-        LivingEntity entity = baritone.getPlayerContext().entity();
-        this.player = entity instanceof PlayerEntity ? (PlayerEntity) entity : null;
+        this.livingEntity =  baritone.getPlayerContext().entity();
+        this.mfEntity = IMinefortressEntity.of(livingEntity);
         this.world = baritone.getPlayerContext().world();
         this.worldData = (WorldData) baritone.getWorldProvider().getCurrentWorld();
         this.bsi = new BlockStateInterface(world);
-        this.toolSet = player == null ? null : new ToolSet(player);
+        this.toolSet = new ToolSet(livingEntity);
         this.hasThrowaway = baritone.settings().allowPlace.get() && ((Baritone) baritone).getInventoryBehavior().hasGenericThrowaway();
-        this.hasWaterBucket = player != null && baritone.settings().allowWaterBucketFall.get() && PlayerInventory.isValidHotbarIndex(InventoryBehavior.getSlotWithStack(player.getInventory(), Automatone.WATER_BUCKETS)) && !world.getDimension().isUltrawarm();
-        this.canSprint = player != null && baritone.settings().allowSprint.get() && player.getHungerManager().getFoodLevel() > 6;
+        this.hasWaterBucket = baritone.settings().allowWaterBucketFall.get() && PlayerInventory.isValidHotbarIndex(InventoryBehavior.getSlotWithStack(mfEntity.getInventory(), Automatone.WATER_BUCKETS)) && !world.getDimension().isUltrawarm();
+        this.canSprint = baritone.settings().allowSprint.get() && mfEntity.getHungerManager().getFoodLevel() > 6;
         this.placeBlockCost = baritone.settings().blockPlacementPenalty.get();
         this.allowBreak = baritone.settings().allowBreak.get();
         this.allowParkour = baritone.settings().allowParkour.get();
@@ -121,7 +125,7 @@ public class CalculationContext {
         this.allowDownward = baritone.settings().allowDownward.get();
         this.maxFallHeightNoWater = baritone.settings().maxFallHeightNoWater.get();
         this.maxFallHeightBucket = baritone.settings().maxFallHeightBucket.get();
-        int depth = EnchantmentHelper.getDepthStrider(entity);
+        int depth = EnchantmentHelper.getDepthStrider(livingEntity);
         if (depth > 3) {
             depth = 3;
         }
@@ -136,17 +140,17 @@ public class CalculationContext {
         // then you get a wildly inconsistent path that isn't optimal for either scenario.
         this.worldTop = world.getTopY();
         this.worldBottom = world.getBottomY();
-        EntityDimensions dimensions = entity.getDimensions(EntityPose.STANDING);
+        EntityDimensions dimensions = livingEntity.getDimensions(EntityPose.STANDING);
         this.width = MathHelper.ceil(dimensions.width);
         // Note: if width is less than 1 (but not negative), we get side space of 0
         this.requiredSideSpace = getRequiredSideSpace(dimensions);
         this.height = MathHelper.ceil(dimensions.height);
         this.blockPos = new BlockPos.Mutable();
         this.allowSwimming = baritone.settings().allowSwimming.get();
-        this.breathTime = baritone.settings().ignoreBreath.get() ? Integer.MAX_VALUE : entity.getMaxAir();
-        this.startingBreathTime = entity.getAir();
-        this.airIncreaseOnLand = ((ILivingEntityAccessor) entity).automatone$getNextAirOnLand(0);
-        this.airDecreaseInWater = breathTime - ((ILivingEntityAccessor) entity).automatone$getNextAirUnderwater(breathTime);
+        this.breathTime = baritone.settings().ignoreBreath.get() ? Integer.MAX_VALUE : livingEntity.getMaxAir();
+        this.startingBreathTime = livingEntity.getAir();
+        this.airIncreaseOnLand = ((ILivingEntityAccessor) livingEntity).automatone$getNextAirOnLand(0);
+        this.airDecreaseInWater = breathTime - ((ILivingEntityAccessor) livingEntity).automatone$getNextAirUnderwater(breathTime);
     }
 
     public static int getRequiredSideSpace(EntityDimensions dimensions) {
@@ -210,8 +214,12 @@ public class CalculationContext {
     }
 
     public boolean isProtected(int x, int y, int z) {
+        final var player = mfEntity.getPlayer();
+        if(Objects.isNull(player)) {
+            return true;
+        }
         this.blockPos.set(x, y, z);
-        return this.player != null && !world.canPlayerModifyAt(this.player, this.blockPos);
+        return this.livingEntity != null && !world.canPlayerModifyAt(player, this.blockPos);
     }
 
     public double oxygenCost(double baseCost, BlockState headState) {

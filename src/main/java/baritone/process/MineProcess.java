@@ -36,6 +36,7 @@ import net.minecraft.block.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 
@@ -75,10 +76,21 @@ public final class MineProcess extends BaritoneProcessHelper implements IMinePro
     @Override
     public PathingCommand onTick(boolean calcFailed, boolean isSafeToCancel) {
         if (desiredQuantity > 0) {
-            PlayerInventory inventory = ctx.inventory();
-            int curr = inventory == null ? -1 : inventory.main.stream()
-                    .filter(stack -> filter.has(stack))
-                    .mapToInt(ItemStack::getCount).sum();
+            Inventory inventory = ctx.inventory();
+            int curr = 0;
+
+            if(inventory != null) {
+                for (int i = 0; i < inventory.size(); i++) {
+                    final var stack = inventory.getStack(i);
+                    if (filter.has(stack)) {
+                        curr += stack.getCount();
+                    }
+                }
+            } else {
+                curr = -1;
+            }
+
+
             Automatone.LOGGER.debug("Currently have " + curr + " valid items");
             if (curr >= desiredQuantity) {
                 logDirect("Have " + curr + " valid items");
