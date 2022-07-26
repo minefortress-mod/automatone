@@ -85,53 +85,6 @@ public class FakeServerPlayerEntity extends ServerPlayerEntity implements Automa
         new ServerPlayNetworkHandler(world.getServer(), new ClientConnection(NetworkSide.CLIENTBOUND), this);
     }
 
-    public void selectHotbarSlot(int hotbarSlot) {
-        Preconditions.checkArgument(PlayerInventory.isValidHotbarIndex(hotbarSlot));
-        if (this.getInventory().selectedSlot != hotbarSlot && this.getActiveHand() == Hand.MAIN_HAND) {
-            this.clearActiveItem();
-        }
-
-        this.getInventory().selectedSlot = hotbarSlot;
-        this.updateLastActionTime();
-    }
-
-    public void swapHands() {
-        ItemStack offhandStack = this.getStackInHand(Hand.OFF_HAND);
-        this.setStackInHand(Hand.OFF_HAND, this.getStackInHand(Hand.MAIN_HAND));
-        this.setStackInHand(Hand.MAIN_HAND, offhandStack);
-        this.clearActiveItem();
-    }
-
-    /**
-     * Calls {@link #clearActiveItem()} at the end of the tick if nothing re-activated it
-     */
-    public void releaseActiveItem() {
-        this.release = true;
-    }
-
-    public void useItem(Hand hand) {
-        if (this.release && hand != this.getActiveHand()) {
-            this.clearActiveItem();
-        }
-
-        if (this.isUsingItem()) return;
-
-        ItemStack stack = this.getStackInHand(hand);
-
-        if (!stack.isEmpty()) {
-            ActionResult actionResult = this.interactionManager.interactItem(
-                this,
-                this.getWorld(),
-                stack,
-                hand
-            );
-
-            if (actionResult.shouldSwingHand()) {
-                this.swingHand(hand, true);
-            }
-        }
-    }
-
     @Override
     public void tick() {
         this.closeHandledScreen();

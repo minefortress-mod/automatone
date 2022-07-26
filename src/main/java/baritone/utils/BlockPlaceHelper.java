@@ -19,6 +19,7 @@ package baritone.utils;
 
 import baritone.api.BaritoneAPI;
 import baritone.api.utils.IEntityContext;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.util.ActionResult;
@@ -42,22 +43,22 @@ public class BlockPlaceHelper {
         }
         HitResult mouseOver = ctx.objectMouseOver();
         boolean isRowingBoat = ctx.entity().getVehicle() != null && ctx.entity().getVehicle() instanceof BoatEntity;
-        if (!rightClickRequested  || !(ctx.entity() instanceof PlayerEntity) || isRowingBoat || mouseOver == null || mouseOver.getType() != HitResult.Type.BLOCK) {
+        if (!rightClickRequested  || isRowingBoat || mouseOver == null || mouseOver.getType() != HitResult.Type.BLOCK) {
             return;
         }
 
         rightClickTimer = BaritoneAPI.getGlobalSettings().rightClickSpeed.get();
-        PlayerEntity player = (PlayerEntity) ctx.entity();
+        LivingEntity livingEntity = ctx.entity();
 
         for (Hand hand : Hand.values()) {
-            ActionResult actionResult = ctx.playerController().processRightClickBlock(player, ctx.world(), hand, (BlockHitResult) mouseOver);
+            ActionResult actionResult = ctx.playerController().processRightClickBlock(livingEntity, ctx.world(), hand, (BlockHitResult) mouseOver);
             if (actionResult.isAccepted()) {
                 if (actionResult.shouldSwingHand()) {
-                    player.swingHand(hand);
+                    livingEntity.swingHand(hand);
                 }
                 return;
             }
-            if (!player.getStackInHand(hand).isEmpty() && ctx.playerController().processRightClick(player, ctx.world(), hand).isAccepted()) {
+            if (!livingEntity.getStackInHand(hand).isEmpty() && ctx.playerController().processRightClick(livingEntity, ctx.world(), hand).isAccepted()) {
                 return;
             }
         }

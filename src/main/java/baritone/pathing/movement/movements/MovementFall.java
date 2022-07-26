@@ -20,6 +20,7 @@ package baritone.pathing.movement.movements;
 import baritone.Automatone;
 import baritone.api.IBaritone;
 import baritone.api.Settings;
+import baritone.api.minefortress.IMinefortressEntity;
 import baritone.api.pathing.movement.MovementStatus;
 import baritone.api.utils.BetterBlockPos;
 import baritone.api.utils.Rotation;
@@ -114,8 +115,7 @@ public class MovementFall extends Movement {
             }
 
             if (ctx.entity().getY() - dest.getY() < ctx.playerController().getBlockReachDistance() && !ctx.entity().isOnGround()) {
-//                inventory.selectedSlot = InventoryBehavior.getSlotWithStack(inventory, Automatone.WATER_BUCKETS);
-
+                IMinefortressEntity.of(ctx.entity()).selectSlot(InventoryBehavior.getSlotWithStack(inventory, Automatone.WATER_BUCKETS));
                 targetRotation = new Rotation(toDest.getYaw(), 90.0F);
 
                 if (ctx.isLookingAt(dest) || ctx.isLookingAt(dest.down())) {
@@ -136,7 +136,7 @@ public class MovementFall extends Movement {
                 Inventory inventory = ctx.inventory();
 
                 if (inventory != null && PlayerInventory.isValidHotbarIndex(InventoryBehavior.getSlotWithStack(inventory, Automatone.EMPTY_BUCKETS))) {
-//                    inventory.selectedSlot = InventoryBehavior.getSlotWithStack(inventory, Automatone.EMPTY_BUCKETS);
+                    IMinefortressEntity.of(ctx.entity()).selectSlot(InventoryBehavior.getSlotWithStack(inventory, Automatone.EMPTY_BUCKETS));
                     if (ctx.entity().getVelocity().y >= 0) {
                         return state.setInput(Input.CLICK_RIGHT, true);
                     } else {

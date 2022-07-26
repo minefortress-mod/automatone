@@ -21,6 +21,7 @@ import baritone.api.utils.IPlayerController;
 import baritone.utils.accessor.IServerPlayerInteractionManager;
 import com.jamieswhiteshirt.reachentityattributes.ReachEntityAttributes;
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -78,12 +79,12 @@ public class ServerPlayerController implements IPlayerController {
     }
 
     @Override
-    public ActionResult processRightClickBlock(PlayerEntity player, World world, Hand hand, BlockHitResult result) {
+    public ActionResult processRightClickBlock(LivingEntity player, World world, Hand hand, BlockHitResult result) {
         return this.player.interactionManager.interactBlock(this.player, this.player.world, this.player.getStackInHand(hand), hand, result);
     }
 
     @Override
-    public ActionResult processRightClick(PlayerEntity player, World world, Hand hand) {
+    public ActionResult processRightClick(LivingEntity player, World world, Hand hand) {
         return this.player.interactionManager.interactItem(this.player, this.player.world, this.player.getStackInHand(hand), hand);
     }
 

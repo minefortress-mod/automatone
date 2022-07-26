@@ -20,6 +20,7 @@ package baritone.pathing.movement;
 import baritone.Baritone;
 import baritone.api.IBaritone;
 import baritone.api.Settings;
+import baritone.api.minefortress.IMinefortressEntity;
 import baritone.api.pathing.movement.ActionCosts;
 import baritone.api.pathing.movement.MovementStatus;
 import baritone.api.utils.BetterBlockPos;
@@ -471,7 +472,8 @@ public interface MovementHelper extends ActionCosts {
         Inventory inventory = ctx.inventory();
 
         if (inventory != null && !ctx.baritone().settings().disableAutoTool.get() && !ctx.baritone().settings().assumeExternalAutoTool.get()) {
-//            inventory.selectedSlot = ts.getBestSlot(b.getBlock(), preferSilkTouch);
+            final var mfEntity = IMinefortressEntity.of(ctx.entity());
+            mfEntity.selectSlot(ts.getBestSlot(b.getBlock(), preferSilkTouch));
         }
     }
 

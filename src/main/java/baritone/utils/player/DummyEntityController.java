@@ -17,8 +17,13 @@
 
 package baritone.utils.player;
 
+import baritone.api.minefortress.IMinefortressEntity;
 import baritone.api.utils.IPlayerController;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUsageContext;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
@@ -26,6 +31,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * A stubbed controller implementation for entities that cannot break or place blocks
@@ -50,16 +56,23 @@ public class DummyEntityController implements IPlayerController {
 
     @Override
     public GameMode getGameType() {
-        return GameMode.ADVENTURE;
+        return GameMode.SURVIVAL;
     }
 
     @Override
-    public ActionResult processRightClickBlock(PlayerEntity player, World world, Hand hand, BlockHitResult result) {
-        return ActionResult.FAIL;
+    public ActionResult processRightClickBlock(LivingEntity entity, World world, Hand hand, BlockHitResult result) {
+        if(hand != Hand.MAIN_HAND) {
+            return ActionResult.FAIL;
+        }
+
+        final var stack = entity.getStackInHand(hand);
+        final var item = stack.getItem();
+        final var context = new FortressItemUsageContext(entity.world, null, hand, new ItemStack(item), result);
+        return item.useOnBlock(context);
     }
 
     @Override
-    public ActionResult processRightClick(PlayerEntity player, World world, Hand hand) {
+    public ActionResult processRightClick(LivingEntity player, World world, Hand hand) {
         return ActionResult.FAIL;
     }
 
@@ -75,6 +88,12 @@ public class DummyEntityController implements IPlayerController {
 
     @Override
     public double getBlockReachDistance() {
-        return 0;
+        return 5.0;
+    }
+
+    private static class FortressItemUsageContext extends ItemUsageContext {
+        public FortressItemUsageContext(World world, @Nullable PlayerEntity player, Hand hand, ItemStack stack, BlockHitResult hit) {
+            super(world, player, hand, stack, hit);
+        }
     }
 }

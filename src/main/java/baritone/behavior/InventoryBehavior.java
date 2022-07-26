@@ -159,7 +159,8 @@ public final class InventoryBehavior extends Behavior {
 
     public boolean throwaway(boolean select, Predicate<? super ItemStack> desired) {
         final var entity = ctx.entity();
-        Inventory inv = IMinefortressEntity.of(entity).getInventory();
+        final var mfEnt = IMinefortressEntity.of(entity);
+        Inventory inv = mfEnt.getInventory();
         if (inv == null) {
             return false;
         }
@@ -172,7 +173,7 @@ public final class InventoryBehavior extends Behavior {
             // acceptableThrowawayItems to the CalculationContext
             if (desired.test(item)) {
                 if (select) {
-//                    inv.selectedSlot = i;
+                    mfEnt.selectSlot(i);
                 }
                 return true;
             }

@@ -20,6 +20,7 @@ package baritone.api.utils;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
 import dev.onyxstudios.cca.api.v3.component.TransientComponent;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -45,9 +46,9 @@ public interface IPlayerController extends TransientComponent {
 
     GameMode getGameType();
 
-    ActionResult processRightClickBlock(PlayerEntity player, World world, Hand hand, BlockHitResult result);
+    ActionResult processRightClickBlock(LivingEntity player, World world, Hand hand, BlockHitResult result);
 
-    ActionResult processRightClick(PlayerEntity player, World world, Hand hand);
+    ActionResult processRightClick(LivingEntity player, World world, Hand hand);
 
     boolean clickBlock(BlockPos loc, Direction face);
 
