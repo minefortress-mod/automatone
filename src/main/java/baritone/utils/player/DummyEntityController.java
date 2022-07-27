@@ -71,7 +71,7 @@ public class DummyEntityController implements IPlayerController {
         final var actionResult = item.useOnBlock(context);
         if(actionResult.isAccepted()) {
             if(entity instanceof IFortressColonist colonist && stack.isIn(ctx.baritone().settings().acceptableThrowawayItems.get())) {
-                colonist.getScaffoldsControl().addBlock(result.getBlockPos());
+                colonist.getScaffoldsControl().addBlock(result.getBlockPos().offset(result.getSide()));
             }
         }
         return actionResult;
