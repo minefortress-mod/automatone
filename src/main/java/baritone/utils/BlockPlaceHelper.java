@@ -51,7 +51,8 @@ public class BlockPlaceHelper {
         LivingEntity livingEntity = ctx.entity();
 
         for (Hand hand : Hand.values()) {
-            ActionResult actionResult = ctx.playerController().processRightClickBlock(livingEntity, ctx.world(), hand, (BlockHitResult) mouseOver);
+
+            ActionResult actionResult = ctx.playerController().processRightClickBlock(livingEntity, ctx.world(), hand, (BlockHitResult) mouseOver, ctx);
             if (actionResult.isAccepted()) {
                 if (actionResult.shouldSwingHand()) {
                     livingEntity.swingHand(hand);

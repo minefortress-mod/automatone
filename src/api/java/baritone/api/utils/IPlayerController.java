@@ -46,7 +46,7 @@ public interface IPlayerController extends TransientComponent {
 
     GameMode getGameType();
 
-    ActionResult processRightClickBlock(LivingEntity player, World world, Hand hand, BlockHitResult result);
+    ActionResult processRightClickBlock(LivingEntity player, World world, Hand hand, BlockHitResult result, IEntityContext ctx);
 
     ActionResult processRightClick(LivingEntity player, World world, Hand hand);
 

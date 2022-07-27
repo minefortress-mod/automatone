@@ -17,11 +17,11 @@
 
 package baritone.utils.player;
 
-import baritone.api.minefortress.IMinefortressEntity;
+import baritone.api.minefortress.IFortressColonist;
+import baritone.api.utils.IEntityContext;
 import baritone.api.utils.IPlayerController;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.util.ActionResult;
@@ -60,7 +60,7 @@ public class DummyEntityController implements IPlayerController {
     }
 
     @Override
-    public ActionResult processRightClickBlock(LivingEntity entity, World world, Hand hand, BlockHitResult result) {
+    public ActionResult processRightClickBlock(LivingEntity entity, World world, Hand hand, BlockHitResult result, IEntityContext ctx) {
         if(hand != Hand.MAIN_HAND) {
             return ActionResult.FAIL;
         }
@@ -68,7 +68,13 @@ public class DummyEntityController implements IPlayerController {
         final var stack = entity.getStackInHand(hand);
         final var item = stack.getItem();
         final var context = new FortressItemUsageContext(entity.world, null, hand, new ItemStack(item), result);
-        return item.useOnBlock(context);
+        final var actionResult = item.useOnBlock(context);
+        if(actionResult.isAccepted()) {
+            if(entity instanceof IFortressColonist colonist && stack.isIn(ctx.baritone().settings().acceptableThrowawayItems.get())) {
+                colonist.getScaffoldsControl().addBlock(result.getBlockPos());
+            }
+        }
+        return actionResult;
     }
 
     @Override

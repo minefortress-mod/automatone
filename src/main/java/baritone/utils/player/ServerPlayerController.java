@@ -17,6 +17,7 @@
 
 package baritone.utils.player;
 
+import baritone.api.utils.IEntityContext;
 import baritone.api.utils.IPlayerController;
 import baritone.utils.accessor.IServerPlayerInteractionManager;
 import com.jamieswhiteshirt.reachentityattributes.ReachEntityAttributes;
@@ -79,7 +80,7 @@ public class ServerPlayerController implements IPlayerController {
     }
 
     @Override
-    public ActionResult processRightClickBlock(LivingEntity player, World world, Hand hand, BlockHitResult result) {
+    public ActionResult processRightClickBlock(LivingEntity player, World world, Hand hand, BlockHitResult result, IEntityContext ctx) {
         return this.player.interactionManager.interactBlock(this.player, this.player.world, this.player.getStackInHand(hand), hand, result);
     }
 
