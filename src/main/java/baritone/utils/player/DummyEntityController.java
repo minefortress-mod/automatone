@@ -18,8 +18,13 @@
 package baritone.utils.player;
 
 import baritone.api.minefortress.IFortressColonist;
+import baritone.api.minefortress.IMinefortressEntity;
 import baritone.api.utils.IEntityContext;
 import baritone.api.utils.IPlayerController;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.DoorBlock;
+import net.minecraft.block.FenceGateBlock;
+import net.minecraft.block.TrapdoorBlock;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -61,17 +66,43 @@ public class DummyEntityController implements IPlayerController {
 
     @Override
     public ActionResult processRightClickBlock(LivingEntity entity, World world, Hand hand, BlockHitResult result, IEntityContext ctx) {
+        final var pos = result.getBlockPos();
+        final var blockState = world.getBlockState(pos);
+        final var mfEntity = IMinefortressEntity.of(entity);
+        final var player = mfEntity.getPlayer();
+
+        if(blockState.getBlock() instanceof DoorBlock doorBlock) {
+            if(DoorBlock.isWoodenDoor(world, pos)) {
+                doorBlock.setOpen(entity, world, blockState, pos, true);
+                return ActionResult.SUCCESS;
+            }
+        }
+
+        if(blockState.getBlock() instanceof TrapdoorBlock doorBlock) {
+            if(DoorBlock.isWoodenDoor(world, pos)) {
+                final var actionResult = doorBlock.onUse(blockState, world, pos, null, hand, result);
+                if(actionResult.isAccepted())
+                    return actionResult;
+            }
+        }
+
+        if(blockState.getBlock() instanceof FenceGateBlock fenceGateBlock) {
+            final var newState = blockState.with(FenceGateBlock.OPEN, true);
+            world.setBlockState(pos, newState, 10);
+            return ActionResult.SUCCESS;
+        }
+
         if(hand != Hand.MAIN_HAND) {
             return ActionResult.FAIL;
         }
 
         final var stack = entity.getStackInHand(hand);
         final var item = stack.getItem();
-        final var context = new FortressItemUsageContext(entity.world, null, hand, new ItemStack(item), result);
+        final var context = new FortressItemUsageContext(entity.world, player, hand, new ItemStack(item), result);
         final var actionResult = item.useOnBlock(context);
         if(actionResult.isAccepted()) {
             if(entity instanceof IFortressColonist colonist && stack.isIn(ctx.baritone().settings().acceptableThrowawayItems.get())) {
-                colonist.getScaffoldsControl().addBlock(result.getBlockPos().offset(result.getSide()));
+                colonist.getScaffoldsControl().addBlock(pos.offset(result.getSide()));
             }
         }
         return actionResult;

@@ -123,8 +123,8 @@ public final class InputOverrideHandler extends Behavior implements IInputOverri
 
         if (this.isInputForcedDown(Input.SNEAK)) {
             entity.setSneaking(true);
-            entity.sidewaysSpeed *= 0.3D;
-            entity.forwardSpeed *= 0.3D;
+            entity.sidewaysSpeed *= 0.2D;
+            entity.forwardSpeed *= 0.2D;
         }
 
         blockBreakHelper.tick(isInputForcedDown(Input.CLICK_LEFT));
