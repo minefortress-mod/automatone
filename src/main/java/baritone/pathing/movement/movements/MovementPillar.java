@@ -287,7 +287,7 @@ public class MovementPillar extends Movement {
 
                 // revise our target to both yaw and pitch if we're going to be moving forward
                 state.setTarget(new MovementState.MovementTarget(rotation, true));
-            } else if (flatMotion < 0.05) {
+            } else if (flatMotion < 0.1) {
                 // If our Y coordinate is above our goal, stop jumping
                 state.setInput(Input.JUMP, ctx.entity().getY() < dest.getY());
             }
