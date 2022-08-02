@@ -12,8 +12,11 @@
   "mixins": [
     "MixinEntity",
     "MixinItemStack",
+    "MixinJumpControl",
     "MixinLivingEntity",
+    "MixinLookControl",
     "MixinMobEntity",
+    "MixinMoveControl",
     "MixinServerChunkManager",
     "MixinServerCommandSource",
     "MixinServerPlayerInteractionManager",
