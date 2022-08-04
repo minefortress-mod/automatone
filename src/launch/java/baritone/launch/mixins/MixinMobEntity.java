@@ -39,10 +39,10 @@ public abstract class MixinMobEntity extends LivingEntity {
 
     @Inject(method = "tickNewAi", at = @At("HEAD"), cancellable = true)
     private void cancelAiTick(CallbackInfo ci) {
-        if (BaritoneProvider.INSTANCE.isPathing(this)) {
-            // mobs tend to set their movement speed to 0, preventing any movement
-            this.setMovementSpeed((float) this.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED));
-//            ci.cancel();
-        }
+//        if (BaritoneProvider.INSTANCE.isPathing(this)) {
+//            // mobs tend to set their movement speed to 0, preventing any movement
+//            this.setMovementSpeed((float) this.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED));
+////            ci.cancel();
+//        }
     }
 }
