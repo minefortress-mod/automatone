@@ -19,7 +19,9 @@ package baritone.api.minefortress;
 
 import net.minecraft.entity.player.HungerManager;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.inventory.Inventory;
+import net.minecraft.item.BucketItem;
 import org.jetbrains.annotations.Nullable;
 
 class PlayerMinefortressEntity implements IMinefortressEntity{
@@ -53,5 +55,10 @@ class PlayerMinefortressEntity implements IMinefortressEntity{
     @Override
     public int getSelectedSlot() {
         return player.getInventory().selectedSlot;
+    }
+
+    @Override
+    public Fluid getBucketFluid(BucketItem bucketItem) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

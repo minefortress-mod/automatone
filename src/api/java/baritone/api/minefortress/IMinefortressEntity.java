@@ -20,7 +20,9 @@ package baritone.api.minefortress;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.HungerManager;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.inventory.Inventory;
+import net.minecraft.item.BucketItem;
 import org.jetbrains.annotations.Nullable;
 
 public interface IMinefortressEntity {
@@ -34,6 +36,8 @@ public interface IMinefortressEntity {
     void selectSlot(int slot);
 
     int getSelectedSlot();
+
+    Fluid getBucketFluid(BucketItem bucketItem);
 
     static IMinefortressEntity of(LivingEntity livingEntity){
         if(livingEntity instanceof PlayerEntity p)
