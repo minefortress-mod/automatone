@@ -59,7 +59,7 @@ public final class Automatone implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        DefaultCommands.registerAll();
-        ArgumentTypes.register("automatone:command", BaritoneArgumentType.class, new ConstantArgumentSerializer<>(BaritoneArgumentType::baritone));
+//        DefaultCommands.registerAll();
+//        ArgumentTypes.register("automatone:command", BaritoneArgumentType.class, new ConstantArgumentSerializer<>(BaritoneArgumentType::baritone));
     }
 }
