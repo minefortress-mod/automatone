@@ -202,18 +202,15 @@ public class DummyEntityController implements IPlayerController {
 
                 return true;
             } else if (block instanceof FluidFillable && fluid == Fluids.WATER) {
-                ((FluidFillable)block).tryFillWithFluid(world, pos, blockState, ((FlowableFluid)fluid).getStill(false));
+                ((FluidFillable)block).tryFillWithFluid(world, pos, blockState, ((FlowableFluid)fluid).getFlowing(7, false));
                 return true;
             } else {
                 if (!world.isClient && bl && !material.isLiquid()) {
                     world.breakBlock(pos, true);
                 }
 
-                if (!world.setBlockState(pos, fluid.getDefaultState().getBlockState(), 11) && !blockState.getFluidState().isStill()) {
-                    return false;
-                } else {
-                    return true;
-                }
+                final var newBlockState = ((FlowableFluid) fluid).getFlowing(7, false).getBlockState();
+                return world.setBlockState(pos, newBlockState, 11);
             }
         }
     }
