@@ -54,7 +54,12 @@ import org.jetbrains.annotations.Nullable;
  * A stubbed controller implementation for entities that cannot break or place blocks
  */
 public class DummyEntityController implements IPlayerController {
-    public static final DummyEntityController INSTANCE = new DummyEntityController();
+
+    private final LivingEntity entity;
+
+    public DummyEntityController(LivingEntity entity) {
+        this.entity = entity;
+    }
 
     @Override
     public boolean hasBrokenBlock() {
@@ -241,6 +246,19 @@ public class DummyEntityController implements IPlayerController {
 
     @Override
     public boolean clickBlock(BlockPos loc, Direction face) {
+        final var world = this.entity.world;
+        BlockState state = world.getBlockState(loc);
+        if (state.isAir()) return false;
+
+        if(state.getHardness(world, loc) <= 0f) {
+            world.breakBlock(loc, true, entity);
+            final var player = IMinefortressEntity.of(entity).getPlayer();
+            if(player != null) {
+                state.getBlock().onBreak(world, loc, state, player);
+            }
+            return true;
+        }
+
         return false;
     }
 
