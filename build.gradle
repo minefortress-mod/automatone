@@ -15,31 +15,16 @@
  * along with Baritone.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-
-import net.fabricmc.loom.task.RemapJarTask
-
-import java.util.stream.Collectors
-
 plugins {
-    id 'io.github.ladysnake.chenille' version "0.7.0"
-    id 'io.github.juuxel.loom-quiltflower' version "1.6.0"
+    id 'java'
+    id 'fabric-loom' version '1.0.12'
 }
 
 group project.maven_group
 version project.mod_version
 
-chenille {
-    configurePublishing {
-        withArtifactory()
-        withGithubRelease()
-    }
-    configureTestmod {
-        withBaseTestRuns()
-        withDependencyConfiguration()
-    }
-
-    javaVersion = 17
-}
+sourceCompatibility = JavaVersion.VERSION_17
+targetCompatibility = JavaVersion.VERSION_17
 
 compileJava {
     options.encoding = "UTF-8" // allow emoji in comments :^)
@@ -53,23 +38,13 @@ sourceSets {
     main {
         compileClasspath += api.output
     }
-    test {
-        compileClasspath += main.compileClasspath + main.runtimeClasspath + main.output
-        runtimeClasspath += main.compileClasspath + main.runtimeClasspath + main.output
-    }
     launch {
         compileClasspath += main.compileClasspath + main.runtimeClasspath + main.output
         runtimeClasspath += main.compileClasspath + main.runtimeClasspath + main.output
     }
-    testmod {
-        compileClasspath += launch.compileClasspath + launch.runtimeClasspath + launch.output
-        runtimeClasspath += launch.compileClasspath + launch.runtimeClasspath + launch.output
-    }
-
     schematica_api {
         compileClasspath += main.compileClasspath
     }
-
     main {
         compileClasspath += schematica_api.output
     }
@@ -78,9 +53,19 @@ sourceSets {
 repositories {
     mavenCentral()
 
-    chenille.repositories {
-        ladysnake()
-        jamieswhiteshirt()
+    maven {
+        name = "Ladysnake Mods"
+        url = 'https://ladysnake.jfrog.io/artifactory/mods'
+    }
+    maven {
+        url "https://maven.jamieswhiteshirt.com/libs-release"
+        content {
+            includeGroup "com.jamieswhiteshirt"
+        }
+    }
+
+    flatDir {
+        dirs "../cc-api/cardinal-components-base/build/libs", "../cc-api/cardinal-components-entity/build/libs", "../cc-api/cardinal-components-world/build/libs"
     }
 
     mavenLocal()
@@ -92,30 +77,10 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${loader_version}"
     implementation 'com.google.code.findbugs:jsr305:3.0.2'
     modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
-    modImplementation "dev.onyxstudios.cardinal-components-api:cardinal-components-base:${cca_version}"
-    modImplementation "dev.onyxstudios.cardinal-components-api:cardinal-components-entity:${cca_version}"
-    modImplementation "dev.onyxstudios.cardinal-components-api:cardinal-components-world:${cca_version}"
-    modImplementation "com.jamieswhiteshirt:reach-entity-attributes:${reach_version}"
-    modTestImplementation("io.github.ladysnake:elmendorf:${elmendorf_version}") {
-        transitive = false
-    }
-    compileOnly "com.demonwav.mcdev:annotations:1.0"
-
-    testImplementation 'junit:junit:4.12'
-}
-
-task testmodJar(type: Jar, dependsOn: testmodClasses) {
-    archiveBaseName.set('Otomaton')
-    archiveClassifier.set('dev')
-    filesMatching('fabric.mod.json') {
-        expand 'version': project.version
-    }
-}
-
-task remapTestmodJar(type: RemapJarTask, dependsOn: project.testmodJar) {
-    archiveBaseName.set('Otomaton')
-    inputFile.set(testmodJar.archiveFile)
-    addNestedDependencies.set(false)
+    modImplementation "cardinal-components-base:cardinal-components-base-4.2.0"
+    modImplementation "cardinal-components-entity:cardinal-components-entity-4.2.0"
+    modImplementation "cardinal-components-world:cardinal-components-world-4.2.0"
+//    modImplementation "com.jamieswhiteshirt:reach-entity-attributes:${reach_version}"
 }
 
 processLaunchResources {
@@ -150,21 +115,5 @@ jar {
                 'Implementation-Title': 'Automatone',
                 'Implementation-Version': project.version
         )
-    }
-}
-
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            pom {
-                name = project.mod_name
-                licenses {
-                    license {
-                        name = 'GNU Lesser General Public License 3.0'
-                        url = 'https://www.gnu.org/licenses/lgpl-3.0.html'
-                    }
-                }
-            }
-        }
     }
 }

@@ -17,8 +17,7 @@
 
 package baritone.api.fakeplayer;
 
-import com.demonwav.mcdev.annotations.CheckEnv;
-import com.demonwav.mcdev.annotations.Env;
+
 import com.mojang.authlib.GameProfile;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.EntityType;
@@ -40,7 +39,6 @@ public final class FakePlayers {
     public static final Identifier SPAWN_PACKET_ID = new Identifier("automatone", "fake_player_spawn");
     public static final Identifier PROFILE_UPDATE_PACKET_ID = new Identifier("automatone", "fake_player_profile");
 
-    @CheckEnv(Env.CLIENT)
     static final Map<EntityType<? extends PlayerEntity>, FakePlayerFactory<ClientWorld, ?>> clientFactories = new HashMap<>();
 
     public static <P extends PlayerEntity & AutomatoneFakePlayer> EntityType.EntityFactory<PlayerEntity> entityFactory(ServerFakePlayerFactory<? extends P> serverFactory) {
@@ -63,7 +61,6 @@ public final class FakePlayers {
      * @param type          the type of the fake player to register a clientside factory for
      * @param clientFactory a factory for that type of fake player
      */
-    @CheckEnv(Env.CLIENT)
     public static void registerClientFactory(EntityType<? extends PlayerEntity> type, FakePlayerFactory<ClientWorld, ?> clientFactory) {
         clientFactories.put(type, clientFactory);
     }
