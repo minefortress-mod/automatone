@@ -33,6 +33,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.item.Items;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -118,8 +119,9 @@ public class DummyEntityController implements IPlayerController {
         final var context = new FortressItemUsageContext(entity.world, player, hand, new ItemStack(item), result);
         final var actionResult = item.useOnBlock(context);
         if(actionResult.isAccepted()) {
+            final var finalPos = blockState.isIn(BlockTags.REPLACEABLE_PLANTS) ? pos : pos.offset(result.getSide());
             if(entity instanceof IFortressColonist colonist && stack.isIn(ctx.baritone().settings().acceptableThrowawayItems.get())) {
-                colonist.getScaffoldsControl().addBlock(pos.offset(result.getSide()));
+                colonist.getScaffoldsControl().addBlock(finalPos);
             }
         }
         return actionResult;
