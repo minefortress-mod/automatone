@@ -35,7 +35,6 @@
 package baritone.api.fakeplayer;
 
 import baritone.api.utils.IEntityAccessor;
-import com.google.common.base.Preconditions;
 import com.mojang.authlib.GameProfile;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
@@ -44,8 +43,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.ClientConnection;
@@ -58,8 +55,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
@@ -72,10 +67,6 @@ public class FakeServerPlayerEntity extends ServerPlayerEntity implements Automa
 
     protected @Nullable GameProfile displayProfile;
     private boolean release;
-
-    public FakeServerPlayerEntity(EntityType<? extends PlayerEntity> type, ServerWorld world) {
-        this(type, world, new GameProfile(UUID.randomUUID(), "FakePlayer"));
-    }
 
     public FakeServerPlayerEntity(EntityType<? extends PlayerEntity> type, ServerWorld world, GameProfile profile) {
         super(world.getServer(), world, profile);

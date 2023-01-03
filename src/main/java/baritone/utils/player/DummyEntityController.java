@@ -154,13 +154,10 @@ public class DummyEntityController implements IPlayerController {
                 BlockState blockState;
                 if (bucketFluid == Fluids.EMPTY) {
                     blockState = world.getBlockState(blockPos);
-                    if (blockState.getBlock() instanceof FluidDrainable) {
-                        FluidDrainable fluidDrainable = (FluidDrainable)blockState.getBlock();
+                    if (blockState.getBlock() instanceof FluidDrainable fluidDrainable) {
                         ItemStack itemStack2 = fluidDrainable.tryDrainFluid(world, blockPos, blockState);
                         if (!itemStack2.isEmpty()) {
-                            fluidDrainable.getBucketFillSound().ifPresent((sound) -> {
-                                user.playSound(sound, 1.0F, 1.0F);
-                            });
+                            fluidDrainable.getBucketFillSound().ifPresent((sound) -> user.playSound(sound, 1.0F, 1.0F));
                             world.emitGameEvent(user, GameEvent.FLUID_PICKUP, blockPos);
 //                            ItemStack itemStack3 = ItemUsage.exchangeStack(itemStack, user, itemStack2);
 
@@ -197,7 +194,7 @@ public class DummyEntityController implements IPlayerController {
             boolean bl = blockState.canBucketPlace(fluid);
             boolean bl2 = blockState.isAir() || bl || block instanceof FluidFillable && ((FluidFillable)block).canFillWithFluid(world, pos, blockState, fluid);
             if (!bl2) {
-                return hitResult != null && this.placeFluid(player, world, hitResult.getBlockPos().offset(hitResult.getSide()), (BlockHitResult)null, fluid);
+                return hitResult != null && this.placeFluid(player, world, hitResult.getBlockPos().offset(hitResult.getSide()), null, fluid);
             } else if (world.getDimension().isUltrawarm() && fluid.isIn(FluidTags.WATER)) {
                 int i = pos.getX();
                 int j = pos.getY();
@@ -209,14 +206,14 @@ public class DummyEntityController implements IPlayerController {
 
                 return true;
             } else if (block instanceof FluidFillable && fluid == Fluids.WATER) {
-                ((FluidFillable)block).tryFillWithFluid(world, pos, blockState, ((FlowableFluid)fluid).getFlowing(7, false));
+                ((FluidFillable)block).tryFillWithFluid(world, pos, blockState, ((FlowableFluid)fluid).getFlowing(3, false));
                 return true;
             } else {
                 if (!world.isClient && bl && !material.isLiquid()) {
                     world.breakBlock(pos, true);
                 }
 
-                final var newBlockState = ((FlowableFluid) fluid).getFlowing(7, false).getBlockState();
+                final var newBlockState = ((FlowableFluid) fluid).getFlowing(3, false).getBlockState();
                 return world.setBlockState(pos, newBlockState, 11);
             }
         }
@@ -237,10 +234,9 @@ public class DummyEntityController implements IPlayerController {
         float j = -MathHelper.cos(-f * ((float)Math.PI / 180));
         float k = MathHelper.sin(-f * ((float)Math.PI / 180));
         float l = i * j;
-        float m = k;
         float n = h * j;
         double d = 5.0;
-        Vec3d vec3d2 = vec3d.add((double)l * 5.0, (double)m * 5.0, (double)n * 5.0);
+        Vec3d vec3d2 = vec3d.add((double)l * 5.0, (double) k * 5.0, (double)n * 5.0);
         return world.raycast(new RaycastContext(vec3d, vec3d2, RaycastContext.ShapeType.OUTLINE, fluidHandling, entity));
     }
 
