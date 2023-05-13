@@ -82,9 +82,9 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${loader_version}"
     implementation 'com.google.code.findbugs:jsr305:3.0.2'
     modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
-    modImplementation "dev.onyxstudios.cardinal-components-api:cardinal-components-base:2.4.0+minefortress"
-    modImplementation "dev.onyxstudios.cardinal-components-api:cardinal-components-entity:2.4.0+minefortress"
-    modImplementation "dev.onyxstudios.cardinal-components-api:cardinal-components-world:2.4.0+minefortress"
+    modImplementation "dev.onyxstudios.cardinal-components-api:cardinal-components-base:4.2.0+minefortress"
+    modImplementation "dev.onyxstudios.cardinal-components-api:cardinal-components-entity:4.2.0+minefortress"
+    modImplementation "dev.onyxstudios.cardinal-components-api:cardinal-components-world:4.2.0+minefortress"
 //    modImplementation "com.jamieswhiteshirt:reach-entity-attributes:${reach_version}"
 }
 
