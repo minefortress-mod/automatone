@@ -18,10 +18,11 @@
 plugins {
     id 'java'
     id 'fabric-loom' version '1.0.12'
+    id 'maven-publish'
 }
 
 group project.maven_group
-version project.mod_version
+version System.getenv("TAG_NAME") ?: project.mod_version
 
 sourceCompatibility = JavaVersion.VERSION_17
 targetCompatibility = JavaVersion.VERSION_17
@@ -58,14 +59,18 @@ repositories {
         url = 'https://ladysnake.jfrog.io/artifactory/mods'
     }
     maven {
+        name = "cc-api"
+        url = "https://maven.pkg.github.com/minefortress-mod/minefortress-cc-api"
+        credentials {
+            username = System.getenv("GITHUB_USERNAME")
+            password = System.getenv("GITHUB_TOKEN")
+        }
+    }
+    maven {
         url "https://maven.jamieswhiteshirt.com/libs-release"
         content {
             includeGroup "com.jamieswhiteshirt"
         }
-    }
-
-    flatDir {
-        dirs "../cc-api/cardinal-components-base/build/libs", "../cc-api/cardinal-components-entity/build/libs", "../cc-api/cardinal-components-world/build/libs"
     }
 
     mavenLocal()
@@ -77,9 +82,9 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${loader_version}"
     implementation 'com.google.code.findbugs:jsr305:3.0.2'
     modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
-    modImplementation "cardinal-components-base:cardinal-components-base-4.2.0"
-    modImplementation "cardinal-components-entity:cardinal-components-entity-4.2.0"
-    modImplementation "cardinal-components-world:cardinal-components-world-4.2.0"
+    modImplementation "dev.onyxstudios.cardinal-components-api:cardinal-components-base:2.4.0+minefortress"
+    modImplementation "dev.onyxstudios.cardinal-components-api:cardinal-components-entity:2.4.0+minefortress"
+    modImplementation "dev.onyxstudios.cardinal-components-api:cardinal-components-world:2.4.0+minefortress"
 //    modImplementation "com.jamieswhiteshirt:reach-entity-attributes:${reach_version}"
 }
 
@@ -115,5 +120,23 @@ jar {
                 'Implementation-Title': 'Automatone',
                 'Implementation-Version': project.version
         )
+    }
+}
+
+publishing {
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/" + System.getenv("GITHUB_REPOSITORY"))
+            credentials {
+                username = System.getenv("GITHUB_USERNAME")
+                password = System.getenv("GITHUB_TOKEN")
+            }
+        }
+    }
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
     }
 }
