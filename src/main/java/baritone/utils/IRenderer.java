@@ -54,7 +54,6 @@ public interface IRenderer {
         RenderSystem.blendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
         glColor(color, alpha);
         RenderSystem.lineWidth(lineWidth);
-        RenderSystem.disableTexture();
         RenderSystem.depthMask(false);
 
         if (ignoreDepth) {
@@ -72,7 +71,6 @@ public interface IRenderer {
         }
 
         RenderSystem.depthMask(true);
-        RenderSystem.enableTexture();
         RenderSystem.disableBlend();
     }
 
@@ -80,7 +78,7 @@ public interface IRenderer {
         Vec3d cameraPos = renderManager.camera.getPos();
         Box toDraw = aabb.offset(-cameraPos.x, -cameraPos.y, -cameraPos.z);
 
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        RenderSystem.setShader(GameRenderer::getPositionColorProgram);
         buffer.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
         // bottom
         buffer.vertex((float) toDraw.minX, (float) toDraw.minY, (float) toDraw.minZ).color(State.red, State.green, State.blue, State.alpha).next();

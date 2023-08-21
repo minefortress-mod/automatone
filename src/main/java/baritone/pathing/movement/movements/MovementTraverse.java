@@ -37,7 +37,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.fluid.WaterFluid;
-import net.minecraft.tag.BlockTags;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -248,7 +248,7 @@ public class MovementTraverse extends Movement {
                 // now that we've checked all possible directions to side place, we actually need to backplace
                 // none of the vanilla impls do a blocking or thread unsafe call, so passing the world directly should be fine
                 // also none of the full cubes actually use the pos, so we should be fine not creating a real BlockPos for this
-                if (!srcOn.getMaterial().isReplaceable() && !srcOn.isFullCube(context.world, BlockPos.ORIGIN)) {
+                if (!srcOn.isReplaceable() && !srcOn.isFullCube(context.world, BlockPos.ORIGIN)) {
                     // If srcOn is currently replaceable, we will have a proper block when we stand on it
                     return; // can't sneak and backplace against eg. soul sand or half slabs (regardless of whether it's top half or bottom half) =/
                 }
@@ -474,7 +474,7 @@ public class MovementTraverse extends Movement {
         if (bs.getBlock() instanceof DoorBlock) {
             boolean notPassable = bs.getBlock() instanceof DoorBlock && !MovementHelper.isDoorPassable(ctx, dest, src);
             // assume wooden doors can be opened and other doors cannot
-            boolean canOpen = DoorBlock.isWoodenDoor(bs);
+            boolean canOpen = DoorBlock.canOpenByHand(bs);
 
             if (notPassable && canOpen) {
                 state.setTarget(new MovementState.MovementTarget(RotationUtils.calcRotationFromVec3d(ctx.headPos(), VecUtils.calculateBlockCenter(ctx.world(), dest.up()), ctx.entityRotations()), true))

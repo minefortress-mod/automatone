@@ -17,8 +17,6 @@
 
 package baritone.api;
 
-import net.minecraft.text.BaseText;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
@@ -54,11 +52,11 @@ public final class BaritoneAPI {
         // Inner text component
         final Calendar now = Calendar.getInstance();
         final boolean xd = now.get(Calendar.MONTH) == Calendar.APRIL && now.get(Calendar.DAY_OF_MONTH) <= 3;
-        BaseText baritone = new LiteralText(xd ? "Automatoe" : getGlobalSettings().shortBaritonePrefix.get() ? "A" : "Automatone");
+        final var baritone = Text.literal(xd ? "Automatoe" : getGlobalSettings().shortBaritonePrefix.get() ? "A" : "Automatone");
         baritone.setStyle(baritone.getStyle().withFormatting(Formatting.GREEN));
 
         // Outer brackets
-        BaseText prefix = new LiteralText("");
+        final var prefix = Text.literal("");
         prefix.setStyle(baritone.getStyle().withFormatting(Formatting.DARK_GREEN));
         prefix.append("[");
         prefix.append(baritone);

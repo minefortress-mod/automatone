@@ -29,12 +29,15 @@ import net.minecraft.fluid.FlowableFluid;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.BucketItem;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.item.Items;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.tag.BlockTags;
-import net.minecraft.tag.FluidTags;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
@@ -44,7 +47,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
@@ -90,14 +92,14 @@ public class DummyEntityController implements IPlayerController {
         final var player = mfEntity.getPlayer();
 
         if(blockState.getBlock() instanceof DoorBlock doorBlock) {
-            if(DoorBlock.isWoodenDoor(world, pos)) {
+            if(DoorBlock.canOpenByHand(world, pos)) {
                 doorBlock.setOpen(entity, world, blockState, pos, true);
                 return ActionResult.SUCCESS;
             }
         }
 
         if(blockState.getBlock() instanceof TrapdoorBlock doorBlock) {
-            if(DoorBlock.isWoodenDoor(world, pos)) {
+            if(DoorBlock.canOpenByHand(world, pos)) {
                 final var actionResult = doorBlock.onUse(blockState, world, pos, null, hand, result);
                 if(actionResult.isAccepted())
                     return actionResult;
@@ -116,10 +118,10 @@ public class DummyEntityController implements IPlayerController {
 
         final var stack = entity.getStackInHand(hand);
         final var item = stack.getItem();
-        final var context = new FortressItemUsageContext(entity.world, player, hand, new ItemStack(item), result);
+        final var context = new FortressItemUsageContext(entity.getWorld(), player, hand, new ItemStack(item), result);
         final var actionResult = item.useOnBlock(context);
         if(actionResult.isAccepted()) {
-            final var finalPos = blockState.isIn(BlockTags.REPLACEABLE_PLANTS) ? pos : pos.offset(result.getSide());
+            final var finalPos = blockState.isIn(BlockTags.REPLACEABLE) ? pos : pos.offset(result.getSide());
             if(entity instanceof IFortressColonist colonist && stack.isIn(ctx.baritone().settings().acceptableThrowawayItems.get())) {
                 colonist.getScaffoldsControl().addBlock(finalPos);
             }
@@ -190,12 +192,11 @@ public class DummyEntityController implements IPlayerController {
         } else {
             BlockState blockState = world.getBlockState(pos);
             Block block = blockState.getBlock();
-            Material material = blockState.getMaterial();
             boolean bl = blockState.canBucketPlace(fluid);
             boolean bl2 = blockState.isAir() || bl || block instanceof FluidFillable && ((FluidFillable)block).canFillWithFluid(world, pos, blockState, fluid);
             if (!bl2) {
                 return hitResult != null && this.placeFluid(player, world, hitResult.getBlockPos().offset(hitResult.getSide()), null, fluid);
-            } else if (world.getDimension().isUltrawarm() && fluid.isIn(FluidTags.WATER)) {
+            } else if (world.getDimension().ultrawarm() && fluid.isIn(FluidTags.WATER)) {
                 int i = pos.getX();
                 int j = pos.getY();
                 int k = pos.getZ();
@@ -209,7 +210,7 @@ public class DummyEntityController implements IPlayerController {
                 ((FluidFillable)block).tryFillWithFluid(world, pos, blockState, ((FlowableFluid)fluid).getFlowing(3, false));
                 return true;
             } else {
-                if (!world.isClient && bl && !material.isLiquid()) {
+                if (!world.isClient && bl && !blockState.getFluidState().isEmpty()) {
                     world.breakBlock(pos, true);
                 }
 
@@ -222,7 +223,7 @@ public class DummyEntityController implements IPlayerController {
     public boolean canPlaceOn(BlockPos pos, Direction facing, ItemStack stack, World world) {
         BlockPos blockPos = pos.offset(facing.getOpposite());
         CachedBlockPosition cachedBlockPosition = new CachedBlockPosition(world, blockPos, false);
-        return stack.canPlaceOn(world.getRegistryManager().get(Registry.BLOCK_KEY), cachedBlockPosition);
+        return stack.canPlaceOn(world.getRegistryManager().get(RegistryKeys.BLOCK), cachedBlockPosition);
     }
 
     protected static BlockHitResult raycast(World world, LivingEntity entity, RaycastContext.FluidHandling fluidHandling) {
@@ -244,7 +245,7 @@ public class DummyEntityController implements IPlayerController {
 
     @Override
     public boolean clickBlock(BlockPos loc, Direction face) {
-        final var world = this.entity.world;
+        final var world = this.entity.getWorld();
         BlockState state = world.getBlockState(loc);
         if (state.isAir()) return false;
 

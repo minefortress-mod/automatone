@@ -44,11 +44,11 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.CheckForNull;
+import java.util.UUID;
 
 public class FakeClientPlayerEntity extends OtherClientPlayerEntity implements AutomatoneFakePlayer {
     protected PlayerListEntry listEntry;
@@ -71,14 +71,14 @@ public class FakeClientPlayerEntity extends OtherClientPlayerEntity implements A
     public void setPlayerListEntry(@Nullable GameProfile profile) {
         this.listEntry = profile == null
             ? null
-            : new PlayerListEntry(new PlayerListS2CPacket.Entry(profile, 0, null, null));
+            : new PlayerListEntry(profile, false);
     }
 
     @Override
     public Text getName() {
         GameProfile ownerProfile = this.getDisplayProfile();
         if (ownerProfile != null) {
-            return new LiteralText(ownerProfile.getName());
+            return Text.literal(ownerProfile.getName());
         }
         return super.getName();
     }
@@ -97,12 +97,12 @@ public class FakeClientPlayerEntity extends OtherClientPlayerEntity implements A
     @Override
     public void playSound(SoundEvent sound, float volume, float pitch) {
         if (!this.isSilent()) {
-            this.world.playSound(this.getX(), this.getY(), this.getZ(), sound, this.getSoundCategory(), volume, pitch, false);
+            this.getWorld().playSound(this.getX(), this.getY(), this.getZ(), sound, this.getSoundCategory(), volume, pitch, false);
         }
     }
 
     @Override
     public void playSound(SoundEvent event, SoundCategory category, float volume, float pitch) {
-        this.world.playSound(this.getX(), this.getY(), this.getZ(), event, category, volume, pitch, false);
+        this.getWorld().playSound(this.getX(), this.getY(), this.getZ(), event, category, volume, pitch, false);
     }
 }

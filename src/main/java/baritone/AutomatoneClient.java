@@ -39,7 +39,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
@@ -86,7 +86,7 @@ public final class AutomatoneClient implements ClientModInitializer {
         ClientPlayNetworking.registerGlobalReceiver(FakePlayers.SPAWN_PACKET_ID, (client, handler, buf, responseSender) -> {
             int id = buf.readVarInt();
             UUID uuid = buf.readUuid();
-            EntityType<?> entityTypeId = Registry.ENTITY_TYPE.get(buf.readVarInt());
+            EntityType<?> entityTypeId = Registries.ENTITY_TYPE.get(buf.readVarInt());
             String name = buf.readString();
             double x = buf.readDouble();
             double y = buf.readDouble();

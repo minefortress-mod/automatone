@@ -56,13 +56,13 @@ public class WaypointsCommand extends Command {
             throw new CommandInvalidTypeException(args.consumed(), "an action");
         }
         BiFunction<IWaypoint, Action, Text> toComponent = (waypoint, _action) -> {
-            BaseText component = new LiteralText("");
-            BaseText tagComponent = new LiteralText(waypoint.getTag().name() + " ");
+            var component = Text.literal("");
+            var tagComponent = Text.literal(waypoint.getTag().name() + " ");
             tagComponent.setStyle(tagComponent.getStyle().withFormatting(Formatting.GRAY));
             String name = waypoint.getName();
-            BaseText nameComponent = new LiteralText(!name.isEmpty() ? name : "<empty>");
+            var nameComponent = Text.literal(!name.isEmpty() ? name : "<empty>");
             nameComponent.setStyle(nameComponent.getStyle().withFormatting(!name.isEmpty() ? Formatting.GRAY : Formatting.DARK_GRAY));
-            BaseText timestamp = new LiteralText(" @ " + new Date(waypoint.getCreationTimestamp()));
+            var timestamp = Text.literal(" @ " + new Date(waypoint.getCreationTimestamp()));
             timestamp.setStyle(timestamp.getStyle().withFormatting(Formatting.DARK_GRAY));
             component.append(tagComponent);
             component.append(nameComponent);
@@ -70,7 +70,7 @@ public class WaypointsCommand extends Command {
             component.setStyle(component.getStyle()
                     .withHoverEvent(new HoverEvent(
                             HoverEvent.Action.SHOW_TEXT,
-                            new LiteralText("Click to select")
+                            Text.literal("Click to select")
                     ))
                     .withClickEvent(new ClickEvent(
                             ClickEvent.Action.RUN_COMMAND,
@@ -134,7 +134,7 @@ public class WaypointsCommand extends Command {
             args.requireMax(0);
             IWaypoint waypoint = new Waypoint(name, tag, pos);
             ForWaypoints.waypoints(baritone).addWaypoint(waypoint);
-            BaseText component = new LiteralText("Waypoint added: ");
+            var component = Text.literal("Waypoint added: ");
             component.setStyle(component.getStyle().withFormatting(Formatting.GRAY));
             component.append(toComponent.apply(waypoint, Action.INFO));
             logDirect(source, component);
@@ -192,7 +192,7 @@ public class WaypointsCommand extends Command {
                 if (action == Action.INFO) {
                     logDirect(source, transform.apply(waypoint));
                     logDirect(source, String.format("Position: %s", waypoint.getLocation()));
-                    BaseText deleteComponent = new LiteralText("Click to delete this waypoint");
+                    var deleteComponent = Text.literal("Click to delete this waypoint");
                     deleteComponent.setStyle(deleteComponent.getStyle().withClickEvent(new ClickEvent(
                             ClickEvent.Action.RUN_COMMAND,
                             String.format(
@@ -203,7 +203,7 @@ public class WaypointsCommand extends Command {
                                     waypoint.getCreationTimestamp()
                             )
                     )));
-                    BaseText goalComponent = new LiteralText("Click to set goal to this waypoint");
+                    var goalComponent = Text.literal("Click to set goal to this waypoint");
                     goalComponent.setStyle(goalComponent.getStyle().withClickEvent(new ClickEvent(
                             ClickEvent.Action.RUN_COMMAND,
                             String.format(
@@ -214,7 +214,7 @@ public class WaypointsCommand extends Command {
                                     waypoint.getCreationTimestamp()
                             )
                     )));
-                    BaseText backComponent = new LiteralText("Click to return to the waypoints list");
+                    var backComponent = Text.literal("Click to return to the waypoints list");
                     backComponent.setStyle(backComponent.getStyle().withClickEvent(new ClickEvent(
                             ClickEvent.Action.RUN_COMMAND,
                             String.format(

@@ -45,9 +45,9 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.fluid.WaterFluid;
 import net.minecraft.inventory.Inventory;
+import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.tag.BlockTags;
-import net.minecraft.tag.FluidTags;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
@@ -127,7 +127,7 @@ public interface MovementHelper extends ActionCosts {
         if (block instanceof DoorBlock || block instanceof FenceGateBlock) {
             // Because there's no nice method in vanilla to check if a door is openable or not, we just have to assume
             // that all wooden doors are openable and vice versa.
-            return block instanceof FenceGateBlock || DoorBlock.isWoodenDoor(state);
+            return block instanceof FenceGateBlock || DoorBlock.canOpenByHand(state);
         }
         if (block instanceof CarpetBlock) {
             return canWalkOn(bsi, x, y - 1, z, settings);
@@ -242,7 +242,7 @@ public interface MovementHelper extends ActionCosts {
         if (block == Blocks.LARGE_FERN || block == Blocks.TALL_GRASS) {
             return true;
         }
-        return state.getMaterial().isReplaceable();
+        return state.isReplaceable();
     }
 
     @Deprecated

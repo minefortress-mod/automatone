@@ -22,7 +22,7 @@ import baritone.api.schematic.format.ISchematicFormat;
 import baritone.utils.schematic.format.DefaultSchematicFormats;
 import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registry;
 
 import java.io.File;
 import java.util.Locale;
