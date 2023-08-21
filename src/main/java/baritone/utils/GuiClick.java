@@ -21,23 +21,25 @@ import baritone.api.BaritoneAPI;
 import baritone.api.utils.BetterBlockPos;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.Window;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.ClickEvent;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.LiteralTextContent;
 import net.minecraft.text.MutableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vector4f;
 import net.minecraft.world.RaycastContext;
+import org.joml.Matrix4f;
+import org.joml.Vector4f;
 
 import java.awt.*;
 import java.util.Collections;
@@ -56,7 +58,7 @@ public class GuiClick extends Screen {
     private BlockPos currentMouseOver;
 
     public GuiClick(UUID callerUuid) {
-        super(new LiteralText("CLICK"));
+        super(Text.literal("CLICK"));
         this.callerUuid = callerUuid;
     }
 
@@ -66,7 +68,7 @@ public class GuiClick extends Screen {
     }
 
     @Override
-    public void render(MatrixStack stack, int mouseX, int mouseY, float partialTicks) {
+    public void render(DrawContext drawContext, int mouseX, int mouseY, float partialTicks) {
         MinecraftClient mc = MinecraftClient.getInstance();
         double mx = mc.mouse.getX();
         double my = mc.mouse.getY();
@@ -81,7 +83,7 @@ public class GuiClick extends Screen {
             ///
             Vec3d viewerPos = new Vec3d(PathRenderer.posX(), PathRenderer.posY(), PathRenderer.posZ());
             PlayerEntity player = Objects.requireNonNull(MinecraftClient.getInstance().player);
-            BlockHitResult result = player.world.raycast(new RaycastContext(near.add(viewerPos), far.add(viewerPos), RaycastContext.ShapeType.OUTLINE, RaycastContext.FluidHandling.NONE, player));
+            BlockHitResult result = player.getWorld().raycast(new RaycastContext(near.add(viewerPos), far.add(viewerPos), RaycastContext.ShapeType.OUTLINE, RaycastContext.FluidHandling.NONE, player));
             if (result != null && result.getType() == HitResult.Type.BLOCK) {
                 currentMouseOver = result.getBlockPos();
             }
@@ -97,10 +99,10 @@ public class GuiClick extends Screen {
             assert client.world != null;
             if (mouseButton == 0) {
                 if (clickStart != null && !clickStart.equals(currentMouseOver)) {
-                    client.player.sendChatMessage(String.format("/execute as %s run automatone sel clear", callerUuid));
-                    client.player.sendChatMessage(String.format("/execute as %s run automatone sel 1 %d %d %d", callerUuid, clickStart.getX(), clickStart.getY(), clickStart.getZ()));
-                    client.player.sendChatMessage(String.format("/execute as %s run automatone sel 2 %d %d %d", callerUuid, currentMouseOver.getX(), currentMouseOver.getY(), currentMouseOver.getZ()));
-                    MutableText component = new LiteralText("").append(BaritoneAPI.getPrefix()).append(" Selection made! For usage: " + FORCE_COMMAND_PREFIX + "help sel");
+                    client.player.sendMessage(Text.literal(String.format("/execute as %s run automatone sel clear", callerUuid)));
+                    client.player.sendMessage(Text.literal(String.format("/execute as %s run automatone sel 1 %d %d %d", callerUuid, clickStart.getX(), clickStart.getY(), clickStart.getZ())));
+                    client.player.sendMessage(Text.literal(String.format("/execute as %s run automatone sel 2 %d %d %d", callerUuid, currentMouseOver.getX(), currentMouseOver.getY(), currentMouseOver.getZ())));
+                    MutableText component = Text.literal("").append(BaritoneAPI.getPrefix()).append(" Selection made! For usage: " + FORCE_COMMAND_PREFIX + "help sel");
                     component.setStyle(component.getStyle()
                             .withFormatting(Formatting.WHITE)
                             .withClickEvent(new ClickEvent(
@@ -110,10 +112,10 @@ public class GuiClick extends Screen {
                     client.inGameHud.getChatHud().addMessage(component);
                     clickStart = null;
                 } else {
-                    client.player.sendChatMessage(String.format("/execute as %s run automatone goto %d %d %d", callerUuid, currentMouseOver.getX(), currentMouseOver.getY(), currentMouseOver.getZ()));
+                    client.player.sendMessage(Text.literal(String.format("/execute as %s run automatone goto %d %d %d", callerUuid, currentMouseOver.getX(), currentMouseOver.getY(), currentMouseOver.getZ())));
                 }
             } else if (mouseButton == 1) {
-                client.player.sendChatMessage(String.format("/execute as %s run automatone goto %d %d %d", callerUuid, currentMouseOver.getX(), currentMouseOver.getY() + 1, currentMouseOver.getZ()));
+                client.player.sendMessage(Text.literal(String.format("/execute as %s run automatone goto %d %d %d", callerUuid, currentMouseOver.getX(), currentMouseOver.getY() + 1, currentMouseOver.getZ())));
             }
         }
         clickStart = null;
@@ -127,8 +129,8 @@ public class GuiClick extends Screen {
     }
 
     public void onRender(MatrixStack modelViewStack, Matrix4f projectionMatrix) {
-        this.projectionViewMatrix = projectionMatrix.copy();
-        this.projectionViewMatrix.multiply(modelViewStack.peek().getPositionMatrix());
+        this.projectionViewMatrix = new Matrix4f(projectionMatrix);
+        this.projectionViewMatrix.mul(modelViewStack.peek().getPositionMatrix());
         this.projectionViewMatrix.invert();
 
         if (currentMouseOver != null) {
@@ -140,7 +142,6 @@ public class GuiClick extends Screen {
                 RenderSystem.blendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
                 IRenderer.glColor(Color.RED, 0.4F);
                 RenderSystem.lineWidth(BaritoneAPI.getGlobalSettings().pathRenderLineWidthPixels.get());
-                RenderSystem.disableTexture();
                 RenderSystem.depthMask(false);
                 RenderSystem.disableDepthTest();
                 BetterBlockPos a = new BetterBlockPos(currentMouseOver);
@@ -149,7 +150,6 @@ public class GuiClick extends Screen {
                 RenderSystem.enableDepthTest();
 
                 RenderSystem.depthMask(true);
-                RenderSystem.enableTexture();
                 RenderSystem.disableBlend();
             }
         }
@@ -167,12 +167,12 @@ public class GuiClick extends Screen {
         y = y * 2 - 1;
 
         Vector4f pos = new Vector4f((float) x, (float) y, (float) z, 1.0F);
-        pos.transform(this.projectionViewMatrix);
-        if (pos.getW() == 0) {
+        pos.mul(this.projectionViewMatrix);
+        if (pos.w() == 0) {
             return null;
         }
 
-        pos.normalizeProjectiveCoordinates();
-        return new Vec3d(pos.getX(), pos.getY(), pos.getZ());
+        pos.normalize();
+        return new Vec3d(pos.x(), pos.y(), pos.z());
     }
 }

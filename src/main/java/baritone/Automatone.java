@@ -23,9 +23,10 @@ import net.fabricmc.api.ModInitializer;
 import net.minecraft.command.argument.ArgumentTypes;
 import net.minecraft.command.argument.serialize.ConstantArgumentSerializer;
 import net.minecraft.item.Item;
-import net.minecraft.tag.TagKey;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -39,8 +40,8 @@ public final class Automatone implements ModInitializer {
     public static final Logger LOGGER = LogManager.getLogger("Automatone");
     public static final String MOD_ID = "automatone";
 
-    public static final TagKey<Item> EMPTY_BUCKETS = TagKey.of(Registry.ITEM_KEY, id("empty_buckets"));
-    public static final TagKey<Item> WATER_BUCKETS = TagKey.of(Registry.ITEM_KEY, id("water_buckets"));
+    public static final TagKey<Item> EMPTY_BUCKETS = TagKey.of(RegistryKeys.ITEM, id("empty_buckets"));
+    public static final TagKey<Item> WATER_BUCKETS = TagKey.of(RegistryKeys.ITEM, id("water_buckets"));
 
     private static final ThreadPoolExecutor threadPool;
 

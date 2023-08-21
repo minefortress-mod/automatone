@@ -38,7 +38,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.tag.FluidTags;
+import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
@@ -111,7 +111,7 @@ public class CalculationContext {
         this.bsi = new BlockStateInterface(world);
         this.toolSet = new ToolSet(livingEntity);
         this.hasThrowaway = baritone.settings().allowPlace.get() && ((Baritone) baritone).getInventoryBehavior().hasGenericThrowaway();
-        this.hasWaterBucket = baritone.settings().allowWaterBucketFall.get() && PlayerInventory.isValidHotbarIndex(InventoryBehavior.getSlotWithStack(mfEntity.getInventory(), Automatone.WATER_BUCKETS)) && !world.getDimension().isUltrawarm();
+        this.hasWaterBucket = baritone.settings().allowWaterBucketFall.get() && PlayerInventory.isValidHotbarIndex(InventoryBehavior.getSlotWithStack(mfEntity.getInventory(), Automatone.WATER_BUCKETS)) && !world.getDimension().ultrawarm();
         this.canSprint = baritone.settings().allowSprint.get() && mfEntity.getHungerManager().getFoodLevel() > 6;
         this.placeBlockCost = baritone.settings().blockPlacementPenalty.get();
         this.allowBreak = baritone.settings().allowBreak.get();

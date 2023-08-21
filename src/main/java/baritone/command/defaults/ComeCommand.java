@@ -24,6 +24,7 @@ import baritone.api.command.exception.CommandException;
 import baritone.api.pathing.goals.GoalBlock;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 
 import java.util.Arrays;
 import java.util.List;
@@ -38,7 +39,8 @@ public class ComeCommand extends Command {
     @Override
     public void execute(ServerCommandSource source, String label, IArgConsumer args, IBaritone baritone) throws CommandException {
         args.requireMax(0);
-        baritone.getCustomGoalProcess().setGoalAndPath(new GoalBlock(new BlockPos(source.getPosition())));
+        final var position = source.getPosition();
+        baritone.getCustomGoalProcess().setGoalAndPath(new GoalBlock(new BlockPos((int)position.x, (int)position.y, (int)position.z)));
         logDirect(source, "Coming");
     }
 

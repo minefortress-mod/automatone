@@ -28,6 +28,7 @@ import baritone.api.utils.BetterBlockPos;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
@@ -49,7 +50,8 @@ public class BuildCommand extends Command {
         if (FilenameUtils.getExtension(file.getAbsolutePath()).isEmpty()) {
             file = new File(file.getAbsolutePath() + "." + baritone.settings().schematicFallbackExtension.get());
         }
-        BetterBlockPos origin = new BetterBlockPos(new BlockPos(source.getPosition()));
+        final var position = source.getPosition();
+        BetterBlockPos origin = new BetterBlockPos(new BlockPos((int)position.x, (int)position.y, (int)position.z));
         BetterBlockPos buildOrigin;
         if (args.hasAny()) {
             args.requireMax(3);

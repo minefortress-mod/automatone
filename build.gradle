@@ -17,7 +17,7 @@
 
 plugins {
     id 'java'
-    id 'fabric-loom' version '1.0.12'
+    id 'fabric-loom' version '1.2.7'
     id 'maven-publish'
 }
 
@@ -56,7 +56,12 @@ repositories {
 
     maven {
         name = "Ladysnake Mods"
-        url = 'https://ladysnake.jfrog.io/artifactory/mods'
+        url = "https://maven.ladysnake.org/releases"
+        content {
+            includeGroup("io.github.ladysnake")
+            includeGroupByRegex("dev\\.emi.*")
+            includeGroupByRegex("dev\\.onyxstudios.*")
+        }
     }
     maven {
         name = "cc-api"
@@ -82,9 +87,9 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${loader_version}"
     implementation 'com.google.code.findbugs:jsr305:3.0.2'
     modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
-    modImplementation "dev.onyxstudios.cardinal-components-api:cardinal-components-base:4.2.0+minefortress"
-    modImplementation "dev.onyxstudios.cardinal-components-api:cardinal-components-entity:4.2.0+minefortress"
-    modImplementation "dev.onyxstudios.cardinal-components-api:cardinal-components-world:4.2.0+minefortress"
+    modImplementation "dev.onyxstudios.cardinal-components-api:cardinal-components-base:5.2.6+minefortress"
+    modImplementation "dev.onyxstudios.cardinal-components-api:cardinal-components-entity:5.2.6+minefortress"
+    modImplementation "dev.onyxstudios.cardinal-components-api:cardinal-components-world:5.2.6+minefortress"
 //    modImplementation "com.jamieswhiteshirt:reach-entity-attributes:${reach_version}"
 }
 

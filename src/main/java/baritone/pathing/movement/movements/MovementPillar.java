@@ -46,7 +46,7 @@ import net.minecraft.block.enums.SlabType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
-import net.minecraft.tag.BlockTags;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
@@ -296,7 +296,7 @@ public class MovementPillar extends Movement {
             if (!blockIsThere) {
                 BlockState frState = BlockStateInterface.get(ctx, src);
                 // TODO: Evaluate usage of getMaterial().isReplaceable()
-                if (!(frState.isAir() || frState.getMaterial().isReplaceable())) {
+                if (!(frState.isAir() || frState.isReplaceable())) {
                     RotationUtils.reachable(ctx.entity(), src, ctx.playerController().getBlockReachDistance())
                             .map(rot -> new MovementState.MovementTarget(rot, true))
                             .ifPresent(state::setTarget);

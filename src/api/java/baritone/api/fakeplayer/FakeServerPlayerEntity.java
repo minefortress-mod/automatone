@@ -47,21 +47,20 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkSide;
-import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.CheckForNull;
 import java.util.Objects;
-import java.util.UUID;
 
 public class FakeServerPlayerEntity extends ServerPlayerEntity implements AutomatoneFakePlayer {
 
@@ -71,7 +70,7 @@ public class FakeServerPlayerEntity extends ServerPlayerEntity implements Automa
     public FakeServerPlayerEntity(EntityType<? extends PlayerEntity> type, ServerWorld world, GameProfile profile) {
         super(world.getServer(), world, profile);
         ((IEntityAccessor)this).automatone$setType(type);
-        this.stepHeight = 0.6f; // same step height as LivingEntity
+        this.setStepHeight(0.6f);
         // Side effects go brr
         new ServerPlayNetworkHandler(world.getServer(), new ClientConnection(NetworkSide.CLIENTBOUND), this);
     }
@@ -116,7 +115,7 @@ public class FakeServerPlayerEntity extends ServerPlayerEntity implements Automa
 
     @Override
     protected void fall(double heightDifference, boolean onGround, BlockState landedState, BlockPos landedPosition) {
-        this.handleFall(heightDifference, onGround);
+        this.handleFall(0, heightDifference, 0, onGround);
     }
 
     @Override
@@ -138,7 +137,7 @@ public class FakeServerPlayerEntity extends ServerPlayerEntity implements Automa
     public Text getName() {
         GameProfile displayProfile = this.getDisplayProfile();
         if (displayProfile != null) {
-            return new LiteralText(displayProfile.getName());
+            return Text.literal(displayProfile.getName());
         }
         return super.getName();
     }
@@ -176,7 +175,7 @@ public class FakeServerPlayerEntity extends ServerPlayerEntity implements Automa
     }
 
     @Override
-    public Packet<?> createSpawnPacket() {
+    public Packet<ClientPlayPacketListener> createSpawnPacket() {
         PacketByteBuf buf = PacketByteBufs.create();
         writeToSpawnPacket(buf);
         return new CustomPayloadS2CPacket(FakePlayers.SPAWN_PACKET_ID, buf);
@@ -185,7 +184,7 @@ public class FakeServerPlayerEntity extends ServerPlayerEntity implements Automa
     protected void writeToSpawnPacket(PacketByteBuf buf) {
         buf.writeVarInt(this.getId());
         buf.writeUuid(this.getUuid());
-        buf.writeVarInt(Registry.ENTITY_TYPE.getRawId(this.getType()));
+        buf.writeVarInt(Registries.ENTITY_TYPE.getRawId(this.getType()));
         buf.writeString(this.getGameProfile().getName());
         buf.writeDouble(this.getX());
         buf.writeDouble(this.getY());
