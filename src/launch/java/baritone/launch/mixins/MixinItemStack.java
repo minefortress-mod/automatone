@@ -41,6 +41,7 @@ public abstract class MixinItemStack implements IItemStack {
     @Shadow
     public abstract int getDamage();
 
+    @Unique
     private void recalculateHash() {
         baritoneHash = item == null ? -1 : item.hashCode() + getDamage();
     }
@@ -61,6 +62,7 @@ public abstract class MixinItemStack implements IItemStack {
         recalculateHash();
     }
 
+    @Unique
     @Override
     public int getBaritoneHash() {
         return baritoneHash;
