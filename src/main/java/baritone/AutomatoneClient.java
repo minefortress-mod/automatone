@@ -129,7 +129,7 @@ public final class AutomatoneClient implements ClientModInitializer {
         other.prevHeadYaw = headYaw;
         other.updatePositionAndAngles(x, y, z, yaw, pitch);
         other.setDisplayProfile(profile);
-        world.addEntity(id, other);
+        world.addEntity(other);
     }
 
     @Nullable

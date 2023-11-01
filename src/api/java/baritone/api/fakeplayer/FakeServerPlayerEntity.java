@@ -50,8 +50,10 @@ import net.minecraft.network.NetworkSide;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
-import net.minecraft.registry.Registries;
+import net.minecraft.network.packet.c2s.common.SyncedClientOptions;
+import net.minecraft.network.packet.s2c.common.CustomPayloadS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
+import net.minecraft.server.network.ConnectedClientData;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -67,12 +69,12 @@ public class FakeServerPlayerEntity extends ServerPlayerEntity implements Automa
     protected @Nullable GameProfile displayProfile;
     private boolean release;
 
-    public FakeServerPlayerEntity(EntityType<? extends PlayerEntity> type, ServerWorld world, GameProfile profile) {
-        super(world.getServer(), world, profile);
+    public FakeServerPlayerEntity(EntityType<? extends PlayerEntity> type, ServerWorld world, GameProfile profile, SyncedClientOptions syncedClientOptions) {
+        super(world.getServer(), world, profile, syncedClientOptions);
         ((IEntityAccessor)this).automatone$setType(type);
         this.setStepHeight(0.6f);
         // Side effects go brr
-        new ServerPlayNetworkHandler(world.getServer(), new ClientConnection(NetworkSide.CLIENTBOUND), this);
+        new ServerPlayNetworkHandler(world.getServer(), new ClientConnection(NetworkSide.CLIENTBOUND), this, ConnectedClientData.createDefault(profile));
     }
 
     @Override
@@ -176,31 +178,16 @@ public class FakeServerPlayerEntity extends ServerPlayerEntity implements Automa
 
     @Override
     public Packet<ClientPlayPacketListener> createSpawnPacket() {
-        PacketByteBuf buf = PacketByteBufs.create();
-        writeToSpawnPacket(buf);
-        return new CustomPayloadS2CPacket(FakePlayers.SPAWN_PACKET_ID, buf);
-    }
-
-    protected void writeToSpawnPacket(PacketByteBuf buf) {
-        buf.writeVarInt(this.getId());
-        buf.writeUuid(this.getUuid());
-        buf.writeVarInt(Registries.ENTITY_TYPE.getRawId(this.getType()));
-        buf.writeString(this.getGameProfile().getName());
-        buf.writeDouble(this.getX());
-        buf.writeDouble(this.getY());
-        buf.writeDouble(this.getZ());
-        buf.writeByte((byte)((int)(this.getYaw() * 256.0F / 360.0F)));
-        buf.writeByte((byte)((int)(this.getPitch() * 256.0F / 360.0F)));
-        buf.writeByte((byte)((int)(this.headYaw * 256.0F / 360.0F)));
-        writeProfile(buf, this.getDisplayProfile());
+        return new EntitySpawnS2CPacket(this);
     }
 
     public void sendProfileUpdatePacket() {
         PacketByteBuf buf = PacketByteBufs.create();
+        buf.writeIdentifier(FakePlayers.PROFILE_UPDATE_PACKET_ID);
         buf.writeVarInt(this.getId());
         writeProfile(buf, this.getDisplayProfile());
 
-        CustomPayloadS2CPacket packet = new CustomPayloadS2CPacket(FakePlayers.PROFILE_UPDATE_PACKET_ID, buf);
+        var packet = new CustomPayloadS2CPacket(buf);
 
         for (ServerPlayerEntity e : PlayerLookup.tracking(this)) {
             e.networkHandler.sendPacket(packet);

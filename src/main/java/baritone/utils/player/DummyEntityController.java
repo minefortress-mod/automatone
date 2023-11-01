@@ -157,7 +157,7 @@ public class DummyEntityController implements IPlayerController {
                 if (bucketFluid == Fluids.EMPTY) {
                     blockState = world.getBlockState(blockPos);
                     if (blockState.getBlock() instanceof FluidDrainable fluidDrainable) {
-                        ItemStack itemStack2 = fluidDrainable.tryDrainFluid(world, blockPos, blockState);
+                        ItemStack itemStack2 = fluidDrainable.tryDrainFluid((PlayerEntity) user, world, blockPos, blockState);
                         if (!itemStack2.isEmpty()) {
                             fluidDrainable.getBucketFillSound().ifPresent((sound) -> user.playSound(sound, 1.0F, 1.0F));
                             world.emitGameEvent(user, GameEvent.FLUID_PICKUP, blockPos);
@@ -193,7 +193,7 @@ public class DummyEntityController implements IPlayerController {
             BlockState blockState = world.getBlockState(pos);
             Block block = blockState.getBlock();
             boolean bl = blockState.canBucketPlace(fluid);
-            boolean bl2 = blockState.isAir() || bl || block instanceof FluidFillable && ((FluidFillable)block).canFillWithFluid(world, pos, blockState, fluid);
+            boolean bl2 = blockState.isAir() || bl || block instanceof FluidFillable && ((FluidFillable)block).canFillWithFluid((PlayerEntity) player, world, pos, blockState, fluid);
             if (!bl2) {
                 return hitResult != null && this.placeFluid(player, world, hitResult.getBlockPos().offset(hitResult.getSide()), null, fluid);
             } else if (world.getDimension().ultrawarm() && fluid.isIn(FluidTags.WATER)) {
