@@ -17,7 +17,7 @@
 
 package baritone.utils.player;
 
-import baritone.api.minefortress.IFortressColonist;
+import baritone.api.minefortress.IFortressAwareBlockEntity;
 import baritone.api.minefortress.IMinefortressEntity;
 import baritone.api.utils.IEntityContext;
 import baritone.api.utils.IPlayerController;
@@ -29,12 +29,10 @@ import net.minecraft.fluid.FlowableFluid;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.BucketItem;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.item.Items;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.FluidTags;
@@ -50,7 +48,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
-import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -122,8 +119,11 @@ public class DummyEntityController implements IPlayerController {
         final var actionResult = item.useOnBlock(context);
         if(actionResult.isAccepted()) {
             final var finalPos = blockState.isIn(BlockTags.REPLACEABLE) ? pos : pos.offset(result.getSide());
-            if(entity instanceof IFortressColonist colonist && stack.isIn(ctx.baritone().settings().acceptableThrowawayItems.get())) {
-                colonist.getScaffoldsControl().addBlock(finalPos);
+            if(entity instanceof IMinefortressEntity minefortressEntity) {
+                final var blockEntity = world.getBlockEntity(finalPos);
+                if (blockEntity instanceof IFortressAwareBlockEntity fortressAwareBlockEntity) {
+                    fortressAwareBlockEntity.setPlacer(minefortressEntity);
+                }
             }
         }
         return actionResult;

@@ -17,8 +17,8 @@
 
 package baritone.api.minefortress;
 
-public interface IFortressColonist {
+public interface IFortressAwareBlockEntity {
 
-    IBlockPosControl getScaffoldsControl();
+    default void setPlacer(IMinefortressEntity minefortressEntity) {}
 
 }
