@@ -142,9 +142,6 @@ public final class InventoryBehavior extends Behavior {
     public boolean selectThrowawayForLocation(boolean select, int x, int y, int z) {
         final var entity = ctx.entity();
         final PlayerEntity player = IMinefortressEntity.of(entity).getPlayer();
-        if (player == null) {
-            return false;
-        }
 
         BlockState maybe = baritone.getBuilderProcess().placeAt(x, y, z, baritone.bsi.get0(x, y, z));
         if (maybe != null && throwaway(select, stack -> stack.getItem() instanceof BlockItem && maybe.equals(((BlockItem) stack.getItem()).getBlock().getPlacementState(new ItemPlacementContext(new ItemUsageContext(ctx.world(), player, Hand.MAIN_HAND, stack, new BlockHitResult(new Vec3d(entity.getX(), entity.getY(), entity.getZ()), Direction.UP, ctx.feetPos(), false)) {}))))) {

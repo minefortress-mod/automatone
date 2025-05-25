@@ -215,10 +215,11 @@ public class CalculationContext {
 
     public boolean isProtected(int x, int y, int z) {
         final var player = mfEntity.getPlayer();
-        if(Objects.isNull(player)) {
-            return true;
-        }
         this.blockPos.set(x, y, z);
+        if(Objects.isNull(player)) {
+            return !world.isInBuildLimit(blockPos);
+        }
+
         return this.livingEntity != null && !world.canPlayerModifyAt(player, this.blockPos);
     }
 
